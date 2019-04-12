@@ -81,6 +81,30 @@ router.post('/register', (req,res) => {
 });
 
 
+router.post('/', (req,res) => {
+
+
+	var body = req.body;
+	if(body == null ||
+	  body.id == null){
+
+		res.json({status : false, data : {}, error : {msg : "not logged in"}});
+		return ;
+	}
+
+	User.profile(body.id)
+	.then(data => {
+
+		res.json({status : true, data : data, error : {}});
+	})
+	.catch(err => {
+
+		console.log(err);
+		res.json({status : false, data : {}, error : err});
+	});
+
+});
+
 router.post('/request', (req,res) => {
 
 	var body = req.body;
@@ -106,7 +130,26 @@ router.post('/request', (req,res) => {
 
 router.post('/bin', (req,res) => {
 
+	var body = req.body;
+	if(body == null ||
+	   body.id ==null){
 
+		res.json({status : false, data : {}, error : {msg : "not logged in"}});
+		return;
+	}
+
+	var distance = body.distance;
+	var vol = 3.14*20*20*(30-distance);
+	var weight = vol*0.0004;
+	console.log(distance,weight);
+
+	User.emptyBin(body.id,weight,false)
+	.then(receipt => res.json({status : true, data : receipt, error : {}}))
+	.catch(err => {
+
+		console.log(err);
+		res.json({status : false, data : {}, error : {}});
+	});
 });
 
 module.exports = router;
